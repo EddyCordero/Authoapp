@@ -1,15 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Authoapp.API.DbContexts;
+using Authoapp.API.Repositories;
+using Authoapp.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace Authoapp.API
 {
@@ -26,6 +24,30 @@ namespace Authoapp.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddControllers(setupAction =>
+            {
+                setupAction.ReturnHttpNotAcceptable = true;
+            })
+           .AddNewtonsoftJson(setupAction =>
+           {
+               setupAction.SerializerSettings.ContractResolver =
+                 new CamelCasePropertyNamesContractResolver();
+           });
+
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
+            services.AddScoped<IPermissionTypeRepository, PermissionTypeRepository>();
+
+            services.AddScoped<IPermissionService, PermissionService>();
+            services.AddScoped<IPermissionTypeService, PermissionTypeService>();
+
+            services.AddDbContext<AuthoappDbContext>(options =>
+            {
+                //options.UseSqlServer(
+                //    @"Server=(localdb)\mssqllocaldb;Database=AuthoappDB;Trusted_Connection=True;");
+
+                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
