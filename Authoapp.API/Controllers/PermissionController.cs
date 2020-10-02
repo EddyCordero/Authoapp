@@ -28,7 +28,7 @@ namespace Authoapp.API.Controllers
         }
 
         [HttpGet("{permissionId}", Name = "GetPermission")]
-        public IActionResult GetPermissionTypeById(int permissionId)
+        public IActionResult GetPermissionById(int permissionId)
         {
             var permission = _permissionService.GetById(permissionId);
 
@@ -38,7 +38,7 @@ namespace Authoapp.API.Controllers
         }
 
         [HttpPost(Name = "CreatePermission")]
-        public ActionResult<Permission> CreatePermissionType(Permission permission)
+        public ActionResult<Permission> CreatePermission(Permission permission)
         {
             if (permission == null) return BadRequest();
 
@@ -48,7 +48,7 @@ namespace Authoapp.API.Controllers
         }
 
         [HttpPut(Name = "UpdatePermission")]
-        public ActionResult UpdatePermissionType(Permission permission)
+        public ActionResult UpdatePermission(Permission permission)
         {
             var result = _permissionService.GetById(permission.Id);
 
@@ -63,6 +63,22 @@ namespace Authoapp.API.Controllers
             var updateResult = _permissionService.Update(result);
 
             return Ok(updateResult);
+        }
+    
+         [HttpDelete("{permissionId}")]
+        public ActionResult DeletePermission(int permissionId)
+        {
+            var permission = _permissionService.GetById(permissionId);
+
+            if ( permission.Id <= 0)
+                return NotFound();
+
+            if (permission == null)
+                return NotFound();
+
+            _permissionService.Delete(permission);
+
+            return NoContent();
         }
     }
 }

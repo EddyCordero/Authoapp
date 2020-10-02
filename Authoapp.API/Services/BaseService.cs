@@ -110,7 +110,7 @@ namespace Authoapp.API.Services
 
         public virtual List<T> GetAll()
         {
-            return _mainRepository.Get().ToList();
+            return _mainRepository.Get(x => x.DeletedAt == null).ToList();
         }
     }
 
